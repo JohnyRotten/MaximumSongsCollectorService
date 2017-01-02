@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ServiceProcess;
 using System.Threading;
+using SongsCollectorLibrary.Utils;
+using MaximumSongsCollectorService.Collectors;
 
 namespace MaximumSongsCollectorService
 {
@@ -25,6 +27,7 @@ namespace MaximumSongsCollectorService
         private void ServiceWorkerThread(object state)
         {
             var worker = Worker.Instance;
+            worker.AddCollectors(new MaximumCollector());
             while (_running)
             {
                 try

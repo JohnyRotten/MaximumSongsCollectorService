@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using MaximumSongsCollectorService.Collectors;
+using NUnit.Framework;
+using SongsCollectorLibrary.Utils;
 using System;
 using System.Threading;
 
@@ -7,17 +9,26 @@ namespace MaximumSongsCollectorService
     [TestFixture]
     class WorkerTest
     {
+
+        private Worker _worker;
+
+        [SetUp]
+        public void TestInit()
+        {
+            _worker = new Worker();
+            _worker.AddCollectors(new MaximumCollector());
+        }
+
         [Test]
         public void GettingArtistsTest()
         {
-            var worker = new Worker();
-            worker.UpdateSongs();
-            var count = worker.Artists.Count;
+            _worker.UpdateSongs();
+            var count = _worker.Artists.Count;
             Assert.AreNotEqual(0, count);
             Thread.Sleep(TimeSpan.FromMinutes(5));
-            worker.UpdateSongs();
-            Assert.AreNotEqual(count, worker.Artists.Count);
-            worker.Save();
+            _worker.UpdateSongs();
+            Assert.AreNotEqual(count, _worker.Artists.Count);
+            _worker.Save();
         }
 
         [Test]

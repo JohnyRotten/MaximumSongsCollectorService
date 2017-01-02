@@ -54,15 +54,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Artist.cs" />
+    <Compile Include="Collectors\ICollector.cs" />
+    <Compile Include="Collectors\MaximumCollector.cs" />
     <Compile Include="Installer1.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Installer1.Designer.cs">
       <DependentUpon>Installer1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Logger.cs" />
-    <Compile Include="Serializer.cs" />
     <Compile Include="Service1.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -71,7 +70,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskRestarter.cs" />
     <Compile Include="Worker.cs" />
     <Compile Include="WorkerTest.cs" />
   </ItemGroup>
@@ -85,6 +83,12 @@
     <EmbeddedResource Include="Service1.resx">
       <DependentUpon>Service1.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SongsCollectorLibrary\SongsCollectorLibrary.csproj">
+      <Project>{f6b3ea01-0937-4830-bdab-a207c3241ec7}</Project>
+      <Name>SongsCollectorLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

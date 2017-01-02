@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MaximumSongsCollectorService
+namespace SongsCollectorLibrary.Models
 {
     [Serializable]
     public class Artist

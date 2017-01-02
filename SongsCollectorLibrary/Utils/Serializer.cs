@@ -1,8 +1,9 @@
-﻿using System;
+﻿using SongsCollectorLibrary.Utils;
+using System;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace MaximumSongsCollectorService
+namespace SongsCollectorLibrary.Utils
 {
     public static class Serializer
     {

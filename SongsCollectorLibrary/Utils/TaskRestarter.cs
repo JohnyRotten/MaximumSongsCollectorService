@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace MaximumSongsCollectorService
+namespace SongsCollectorLibrary.Utils
 {
     public class TaskRestarter
     {

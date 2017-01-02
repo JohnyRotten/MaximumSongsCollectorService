@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using SongsCollectorLibrary.Utils;
@@ -13,24 +14,23 @@ namespace MaximumSongsCollectorService
     public class Worker
     {
         
-        private readonly List<ICollector> Collectors = new List<ICollector>();
+        private readonly List<ICollector> _collectors = new List<ICollector>();
         private volatile bool _saved;
 
         public List<Artist> Artists { get; set; } = new List<Artist>();
-
-        public Worker() { }
-
+        
         public static Worker Instance => Serializer.Get<Worker>(Constants.DbFile);
 
         public void UpdateSongs()
         {
             Logger.Log("Updating songs.");
-            foreach (var pair in Collectors.SelectMany(c => c.NewSongs))
+            foreach (var pair in _collectors.SelectMany(c => c.NewSongs))
             {
                 var artist = Artists.FirstOrDefault(a => a.Name.ToUpper().Equals(pair.Key.ToUpper()));
+                var songs = pair.Value.Select(name => new Song { Title = name });
                 if (artist != null)
                 {
-                    foreach (var song in pair.Value.Except(artist.Songs))
+                    foreach (var song in songs.Except(artist.Songs))
                     {
                         artist.Songs.Add(song);
                         Logger.Log("Added: {0} - {1}", pair.Key, song);
@@ -39,7 +39,7 @@ namespace MaximumSongsCollectorService
                 }
                 else
                 {
-                    Artists.Add(new Artist { Name = pair.Key, Songs = new HashSet<string>(pair.Value) });
+                    Artists.Add(new Artist { Name = pair.Key, Songs = new ObservableCollection<Song>(songs) });
                     Logger.Log("Added: {0} - {1}", pair.Key, string.Join("|", pair.Value));
                     _saved = false;
                 }
@@ -58,17 +58,17 @@ namespace MaximumSongsCollectorService
             var file = new FileInfo(Constants.DbFile);
             if (!file.Exists)
             {
-                Directory.CreateDirectory(file.Directory.FullName);
+                if (file.Directory != null) Directory.CreateDirectory(file.Directory.FullName);
                 Logger.Log("Create dir.");
             }
-            Serializer.Set<Worker>(Constants.DbFile, this);
+            Serializer.Set(Constants.DbFile, this);
             Logger.Log("Saving");
             _saved = true;
         }
 
         public void AddCollectors(params ICollector[] collectors)
         {
-            Collectors.AddRange(collectors);
+            _collectors.AddRange(collectors);
         }
 
     }

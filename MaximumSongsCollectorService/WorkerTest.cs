@@ -2,7 +2,9 @@
 using NUnit.Framework;
 using SongsCollectorLibrary.Utils;
 using System;
+using System.Linq;
 using System.Threading;
+using SongsCollectorLibrary;
 
 namespace MaximumSongsCollectorService
 {
@@ -17,6 +19,25 @@ namespace MaximumSongsCollectorService
         {
             _worker = new Worker();
             _worker.AddCollectors(new MaximumCollector());
+        }
+
+        [Test]
+        public void DeserializeTest()
+        {
+            Assert.DoesNotThrow(() =>
+            {
+                var worker = Serializer.Get<Worker>(Constants.DbFile);
+            });
+        }
+
+        [Test]
+        public void DuplicateTest()
+        {
+            _worker.UpdateSongs();
+            Func<int> getCount = () => _worker.Artists.Sum(a => a.Songs.Count);
+            var count = getCount();
+            _worker.UpdateSongs();
+            Assert.AreEqual(count, getCount());
         }
 
         [Test]

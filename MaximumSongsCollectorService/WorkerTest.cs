@@ -4,6 +4,7 @@ using SongsCollectorLibrary.Utils;
 using System;
 using System.Linq;
 using System.Threading;
+using Newtonsoft.Json;
 using SongsCollectorLibrary;
 
 namespace MaximumSongsCollectorService
@@ -26,8 +27,17 @@ namespace MaximumSongsCollectorService
         {
             Assert.DoesNotThrow(() =>
             {
-                var worker = Serializer.Get<Worker>(Constants.DbFile);
+                var worker = new Serializer<Worker>(Constants.DbXmlFile, new XmlSerializer<Worker>()).Get();
             });
+        }
+
+        [Test]
+        public void Xml2JsonTest()
+        {
+            var jsonSerializer = new Serializer<Worker>(Constants.DbJsonFile, new JsonSerializer<Worker>());
+            var xmlSerializer = new Serializer<Worker>(Constants.DbXmlFile, new XmlSerializer<Worker>());
+            var item1 = xmlSerializer.Get();
+            jsonSerializer.Set(item1);
         }
 
         [Test]

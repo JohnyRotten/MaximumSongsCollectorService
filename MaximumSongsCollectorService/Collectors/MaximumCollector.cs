@@ -9,9 +9,9 @@ namespace MaximumSongsCollectorService.Collectors
 {
     class MaximumCollector : ICollector
     {
-        private const string _url = "http://maximum.ru/currenttrack.aspx?station=maximum";
+        private const string Url = "http://maximum.ru/currenttrack.aspx?station=maximum";
 
-        private class MaximumJsonConfig
+        internal sealed class MaximumJsonConfig
         {
             public class CurrentTrack
             {
@@ -56,10 +56,10 @@ namespace MaximumSongsCollectorService.Collectors
             }
         }
 
-        private string GetJson()
+        private static string GetJson()
         {
             var data = string.Empty;
-            var request = (HttpWebRequest)WebRequest.Create(_url);
+            var request = (HttpWebRequest)WebRequest.Create(Url);
             var response = (HttpWebResponse)request.GetResponse();
 
             if (response.StatusCode == HttpStatusCode.OK)

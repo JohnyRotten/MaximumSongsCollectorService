@@ -1,21 +1,29 @@
-﻿using SongsCollectorLibrary.Utils;
-using System;
+﻿using System;
 using System.IO;
-using System.Xml.Serialization;
+using System.Text;
 
 namespace SongsCollectorLibrary.Utils
 {
-    public static class Serializer
+    public class Serializer<T> where T : new()
     {
+        private readonly string _path;
+        private readonly ISerializer<T> _serializer;
 
-        public static T Get<T>(string path) where T : new()
+        public Serializer(string path, ISerializer<T> serializer)
+        {
+            _path = path;
+            _serializer = serializer;
+        }
+
+        public T Get()
         {
             try
             {
-                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+                using (var stream = new FileStream(_path, FileMode.Open, FileAccess.Read))
                 {
-                    var serializer = new XmlSerializer(typeof(T));
-                    return (T)serializer.Deserialize(stream);
+                    var bytes = new byte[stream.Length];
+                    stream.Read(bytes, 0, bytes.Length);
+                    return _serializer.Deserialize(Encoding.UTF8.GetString(bytes));
                 }
             }
             catch (Exception e)
@@ -25,14 +33,14 @@ namespace SongsCollectorLibrary.Utils
             return new T();
         }
 
-        public static void Set<T>(string path, T item) where T : new()
+        public void Set(T item)
         {
             try
             {
-                using (var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write))
+                using (var stream = new FileStream(_path, FileMode.OpenOrCreate, FileAccess.Write))
                 {
-                    var serializer = new XmlSerializer(typeof(T));
-                    serializer.Serialize(stream, item);
+                    var bytes = Encoding.UTF8.GetBytes(_serializer.Serialize(item));
+                    stream.Write(bytes, 0, bytes.Length);
                 }
             }
             catch (Exception e)
@@ -40,6 +48,5 @@ namespace SongsCollectorLibrary.Utils
                 Logger.Log("Error: {0}", e);
             }
         }
-
     }
 }

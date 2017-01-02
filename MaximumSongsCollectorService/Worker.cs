@@ -11,15 +11,18 @@ using MaximumSongsCollectorService.Collectors;
 namespace MaximumSongsCollectorService
 {
     [Serializable]
-    public class Worker
+    public class Worker : IArtistCollector
     {
         
         private readonly List<ICollector> _collectors = new List<ICollector>();
         private volatile bool _saved;
 
-        public List<Artist> Artists { get; set; } = new List<Artist>();
+        public ObservableCollection<Artist> Artists { get; set; } = new ObservableCollection<Artist>();
         
-        public static Worker Instance => Serializer.Get<Worker>(Constants.DbFile);
+        private static readonly Serializer<Worker> Serializer = 
+            new Serializer<Worker>(Constants.DbJsonFile, new JsonSerializer<Worker>());
+
+        public static Worker Instance => Serializer.Get();
 
         public void UpdateSongs()
         {
@@ -55,13 +58,13 @@ namespace MaximumSongsCollectorService
         public void Save()
         {
             if (_saved) return;
-            var file = new FileInfo(Constants.DbFile);
+            var file = new FileInfo(Constants.DbXmlFile);
             if (!file.Exists)
             {
                 if (file.Directory != null) Directory.CreateDirectory(file.Directory.FullName);
                 Logger.Log("Create dir.");
             }
-            Serializer.Set(Constants.DbFile, this);
+            Serializer.Set(this);
             Logger.Log("Saving");
             _saved = true;
         }
